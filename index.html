@@ -3,107 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calcolatrice Scientifica</title>
+    <title>Sondaggio Informazioni</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f0f0;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background: #f0f0f0;
             margin: 0;
         }
 
-        .calculator {
-            background: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .display {
-            margin-bottom: 20px;
-        }
-
-        .display input {
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 500px;
             width: 100%;
-            padding: 10px;
-            font-size: 2em;
-            border: none;
-            border-bottom: 2px solid #ddd;
         }
 
-        .buttons {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
+        h1 {
+            margin-bottom: 25px;
+            font-size: 24px;
+            color: #333;
         }
 
-        .buttons button {
-            padding: 20px;
-            font-size: 1.5em;
-            border: none;
-            background: #f9f9f9;
-            border-radius: 5px;
+        label {
+            font-size: 18px;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        button {
+            margin-top: 25px;
+            padding: 12px 25px;
+            font-size: 16px;
             cursor: pointer;
-            transition: background 0.2s;
+            border: none;
+            border-radius: 4px;
+            background-color: #007BFF;
+            color: #fff;
+            transition: background-color 0.3s ease;
         }
 
-        .buttons button:hover {
-            background: #ddd;
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #thankYouMessage {
+            display: none;
+            margin-top: 25px;
+            font-size: 18px;
+            color: green;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            button {
+                width: 100%;
+                font-size: 14px;
+                padding: 10px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="calculator">
-        <div class="display">
-            <input type="text" id="result" readonly>
-        </div>
-        <div class="buttons">
-            <button onclick="clearDisplay()">C</button>
-            <button onclick="deleteLast()">⌫</button>
-            <button onclick="append('%')">%</button>
-            <button onclick="append('/')">÷</button>
-            <button onclick="append('7')">7</button>
-            <button onclick="append('8')">8</button>
-            <button onclick="append('9')">9</button>
-            <button onclick="append('*')">×</button>
-            <button onclick="append('4')">4</button>
-            <button onclick="append('5')">5</button>
-            <button onclick="append('6')">6</button>
-            <button onclick="append('-')">-</button>
-            <button onclick="append('1')">1</button>
-            <button onclick="append('2')">2</button>
-            <button onclick="append('3')">3</button>
-            <button onclick="append('+')">+</button>
-            <button onclick="append('0')">0</button>
-            <button onclick="append('.')">.</button>
-            <button onclick="calculate()">=</button>
-        </div>
+    <div class="container">
+        <h1>Come Stai?</h1>
+        <form id="surveyForm">
+            <label>
+                <input type="radio" name="response" value="Benissimo" required>
+                Benissimo
+            </label>
+            <label>
+                <input type="radio" name="response" value="Bene" required>
+                Bene
+            </label>
+            <label>
+                <input type="radio" name="response" value="Non molto bene" required>
+                Non molto bene
+            </label>
+            <label>
+                <input type="radio" name="response" value="Male" required>
+                Male
+            </label>
+            <label>
+                <input type="radio" name="response" value="Malissimo" required>
+                Malissimo
+            </label>
+            <button type="submit">Invia</button>
+        </form>
+        <p id="thankYouMessage">Grazie per la tua risposta!</p>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/emailjs-com@2.6.4/dist/email.min.js"></script>
     <script>
-        function clearDisplay() {
-            document.getElementById('result').value = '';
-        }
+        (function () {
+            emailjs.init("gemxunobxQkzXTbw5");
+        })();
 
-        function deleteLast() {
-            let display = document.getElementById('result');
-            display.value = display.value.slice(0, -1);
-        }
+        document.getElementById('surveyForm').addEventListener('submit', function (event) {
+            event.preventDefault();
 
-        function append(character) {
-            document.getElementById('result').value += character;
-        }
+            const response = document.querySelector('input[name="response"]:checked').value;
 
-        function calculate() {
-            try {
-                let display = document.getElementById('result');
-                display.value = eval(display.value);
-            } catch (e) {
-                alert('Errore di calcolo');
-            }
-        }
+            const templateParams = {
+                from_name: 'Survey User',
+                message: response,
+                to_email: 'mahmoud56elsayed@gmail.com'
+            };
+
+            emailjs.send('service_zgnt1pt', 'template_jq4101p', templateParams)
+                .then(function (response) {
+                    console.log('SUCCESS!', response.status, response.text);
+                    document.getElementById('thankYouMessage').style.display = 'block';
+                    document.getElementById('surveyForm').style.display = 'none';
+                }, function (error) {
+                    console.error('FAILED...', error);
+                    alert('Errore durante l\'invio del sondaggio. Riprova più tardi.');
+                });
+        });
     </script>
 </body>
 </html>
